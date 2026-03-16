@@ -1,39 +1,3 @@
-<?php
-header('Content-Type: application/json; charset=utf-8');
-header('Access-Control-Allow-Origin: *');
-
-
-define('SECRET_KEY', 'rand');
-define('BOT_TOKEN', '8763686509:AAFTpbyzE6wnDah146i5pSOtDldQZbv5hps');
-define('CHAT_ID', '7556497932');
-
-
-session_start();
-
-
-$log_file = __DIR__ . '/telegram_proxy_log.txt';
-
-function add_log($message) {
-    global $log_file;
-    $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
-    $time = date('Y-m-d H:i:s');
-    $log_entry = "[$time] [$ip] $message\n";
-    
-    
-    if (file_exists($log_file) && filesize($log_file) > 5 * 1024 * 1024) {
-        file_put_contents($log_file, "=== Log cleared at $time ===\n");
-    }
-    
-    file_put_contents($log_file, $log_entry, FILE_APPEND);
-}
-
-add_log("=== НАЧАЛО ЗАПРОСА ===");
-add_log("GET параметры: " . json_encode($_GET, JSON_UNESCAPED_UNICODE));
-
-$key = $_GET['key'] ?? '';
-if ($key !== SECRET_KEY) {
-    add_log("ОШИБКА: Неверный ключ");
-    http_response_code(403);
     die(json_encode(['error' => 'Forbidden', 'received_key' => substr($key, 0, 5) . '...'], JSON_UNESCAPED_UNICODE));
 }
 
